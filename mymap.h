@@ -76,11 +76,9 @@ class mymap {
     // Time complexity: O(1)
     //
     mymap() {
-
-
         // TODO: write this function.
-
-
+        root = nullptr;
+        size = 0;
     }
 
     //
@@ -92,8 +90,6 @@ class mymap {
     // self-balancing BST.
     //
     mymap(const mymap& other) {
-
-
         // TODO: write this function.
 
 
@@ -156,10 +152,8 @@ class mymap {
     // Space complexity: O(1)
     //
     void put(keyType key, valueType value) {
-
-
         // TODO: write this function.
-
+        
 
     }
 
