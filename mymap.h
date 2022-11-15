@@ -59,12 +59,30 @@ class mymap {
         // O(logN)
         //
         iterator operator++() {
+            if (curr->isThreaded) {
+              curr = curr->right;
+            }
+            else {
+              curr = curr->right;
+              // curr = curr->left;
+              while (curr->left != nullptr) {
+                curr = curr->left;
+              }
+            }
 
+            return iterator(curr);  // TODO: Update this return.
+        }
 
-            // TODO: write this function.
-
-
-            return iterator(nullptr);  // TODO: Update this return.
+        //copy function to copy BST tree
+        void copyHelper(NODE* node) {
+          if (node == nullptr) {
+            return;
+          }
+          else {
+            put(node->key, node->value);
+            copyHelper(node->left);
+            copyHelper(node->right);
+          }
         }
     };
 
@@ -90,9 +108,9 @@ class mymap {
     // self-balancing BST.
     //
     mymap(const mymap& other) {
-        // TODO: write this function.
-
-
+        root = nullptr;
+        size = 0;
+        copyHelper(other.root);
     }
 
     //
@@ -151,10 +169,49 @@ class mymap {
     // sub-tree that needs to be re-balanced.
     // Space complexity: O(1)
     //
-    void put(keyType key, valueType value) {
-        // TODO: write this function.
-        
+    void put(keyType key, valueType value) {   
+        NODE* newNode = new NODE;
+        newNode->key = key;
+        newNode->value = value;
+        newNode->left = nullptr;
+        newNode->right = nullptr;
+        newNode->nL = 0;
+        newNode->nR = 0;
+        newNode->isThreaded = false;
 
+        if (root == nullptr) {
+          root = newNode;
+          size++;
+        }
+        else {
+          NODE* curr = root;
+          NODE* prev = nullptr;
+          while (curr != nullptr) {
+            prev = curr;
+            if (key < curr->key) {
+              curr = curr->left;
+            }
+            else if (key > curr->key) {
+              curr = curr->right;
+            }
+            else {
+              curr->value = value;
+              return;
+            }
+          }
+          if (key < prev->key) {
+            prev->left = newNode;
+            prev->nL++;
+            newNode->right = prev;
+            newNode->isThreaded = true;
+          }
+          else {
+            prev->right = newNode;
+            prev->nR++;
+          }
+          size++;
+          balance(prev);
+        }
     }
 
     //
@@ -164,12 +221,22 @@ class mymap {
     // threaded, self-balancing BST
     //
     bool contains(keyType key) {
-
-
-        // TODO: write this function.
-
-
-        return {};  // TODO: Update this return.
+        NODE* curr = root;
+        while (curr != nullptr) {
+        if (key < curr->key) {
+            curr = curr->left;
+        } 
+        else if (key > curr->key) {
+            if (curr->isThreaded) {
+                curr = nullptr;
+            } else {
+                curr = curr->right;
+            }
+        }
+        else {
+            return true;
+        }
+        return false;
     }
 
     //
@@ -181,12 +248,23 @@ class mymap {
     // threaded, self-balancing BST
     //
     valueType get(keyType key) {
-
-
-        // TODO: write this function.
-
-
-        return {};  // TODO: Update this return.
+        NODE* curr = root;
+        while (curr != nullptr) {
+            if (key < curr->key) {
+                curr = curr->left;
+            } 
+            else if (key > curr->key) {
+                if (curr->isThreaded) {
+                    curr = nullptr;
+                } else {
+                    curr = curr->right;
+                }
+            }
+            else {
+                return curr->value;
+            }
+            return valueType();
+        }
     }
 
     //
@@ -201,12 +279,13 @@ class mymap {
     // Space complexity: O(1)
     //
     valueType operator[](keyType key) {
-
-
-        // TODO: write this function.
-
-
-        return {};  // TODO: Update this return.
+        if (contains(key)) {
+            return get(key);
+        }
+        else {
+            put(key, valueType());
+            return valueType();
+        }
     }
 
     //
