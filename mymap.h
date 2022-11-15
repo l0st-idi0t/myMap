@@ -295,12 +295,7 @@ class mymap {
     // O(1)
     //
     int Size() {
-
-
-        // TODO: write this function.
-
-
-        return {};  // TODO: Update this return.
+      return size;
     }
 
     //
@@ -311,13 +306,13 @@ class mymap {
     // threaded, self-balancing BST
     //
     iterator begin() {
-
-
-        // TODO: write this function.
-
-
-        return iterator(nullptr);  // TODO: Update this return.
+      NODE* curr = root;
+      while (curr->left != nullptr) {
+        curr = curr->left;
+      }
+      return iterator(curr);
     }
+
 
     //
     // end:
@@ -328,7 +323,7 @@ class mymap {
     // Time Complexity: O(1)
     //
     iterator end() {
-        return iterator(nullptr);
+      return iterator(nullptr);
     }
 
     //
@@ -341,12 +336,11 @@ class mymap {
     // threaded, self-balancing BST
     //
     string toString() {
-
-
-        // TODO: write this function.
-
-
-        return {};  // TODO: Update this return.
+      string s = "";
+      for (iterator it = begin(); it != end(); ++it) {
+        s += "key: " + toStringHelper(it->key) + " value: " + toStringHelper(it->value) + "\n";
+      }
+      return s;
     }
 
     //
@@ -357,13 +351,12 @@ class mymap {
     // Time complexity: O(n), where n is total number of nodes in the
     // threaded, self-balancing BST
     //
-    vector<pair<keyType, valueType> > toVector() {
-
-
-        // TODO: write this function.
-
-
-        return {};  // TODO: Update this return.
+    vector<pair<keyType, valueType>> toVector() {
+      vector<pair<keyType, valueType>> v;
+      for (iterator it = begin(); it != end(); ++it) {
+        v.push_back(make_pair(it->key, it->value));
+      }
+      return v;
     }
 
     //
