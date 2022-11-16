@@ -6,6 +6,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <string.h>
 
 using namespace std;
 
@@ -17,7 +18,6 @@ class mymap {
         valueType value;  // stored data for the map
         NODE* left;  // links to left child
         NODE* right;  // links to right child
-        //NODE* cur; // links to the next node for threading (retains regular BST traversal while including threading)
         int nL;  // number of nodes in left subtree
         int nR;  // number of nodes in right subtree
         bool isThreaded;
@@ -52,11 +52,6 @@ class mymap {
         bool isDefault() {
             return !curr;
         }
-
-        // ~iterator() {
-        //   curr = nullptr;
-        //   delete curr;
-        // }
 
         //
         // operator++:
@@ -121,6 +116,30 @@ class mymap {
         if (node->right != nullptr) {
           node->nR = node->right->nL + node->right->nR + 1;
         }
+      }
+    }
+
+    //balance bst tree helper, no AVL rotations
+    void balanceHelper(NODE* node) {
+      //TODO: implement this function
+    }
+
+    //successor
+    NODE* successor(NODE* curr) {
+      if (curr->right != nullptr) {
+        curr = curr->right;
+        while (curr->left != nullptr) {
+          curr = curr->left;
+        }
+        return curr;
+      }
+      else {
+        NODE* parent = curr->right;
+        while (parent != nullptr && curr == parent->right) {
+          curr = parent;
+          parent = parent->right;
+        }
+        return parent;
       }
     }
 
@@ -244,7 +263,7 @@ class mymap {
             prev->nR++;
           }
           size++;
-          balance(prev);
+          balanceHelper(prev);
         }
       }
 
@@ -257,18 +276,20 @@ class mymap {
       bool contains(keyType key) {
         NODE* curr = root;
         while (curr != nullptr) {
-        if (key < curr->key) {
-            curr = curr->left;
-        } 
-        else if (key > curr->key) {
-            if (curr->isThreaded) {
-                curr = nullptr;
-            } else {
-                curr = curr->right;
+            if (key < curr->key) {
+                curr = curr->left;
+            } 
+            else if (key > curr->key) {
+                if (curr->isThreaded) {
+                    curr = nullptr;
+                }
+                else {
+                    curr = curr->right;
+                }
             }
-        }
-        else {
-            return true;
+            else {
+                return true;
+            }
         }
         return false;
       }
@@ -373,8 +394,13 @@ class mymap {
       //
       string toString() {
         string s = "";
-        for (iterator it = begin(); it != end(); ++it) {
-          s += "key: " + toStringHelper(it->key) + " value: " + toStringHelper(it->value) + "\n";
+        NODE* curr = root;
+        while (curr->left != nullptr) {
+          curr = curr->left;
+        }
+        while (curr != nullptr) {
+          s += "key: " + toStringHelper(curr->key) + " value: " + toStringHelper(curr->value) + "\n";
+          curr = successor(curr);
         }
         return s;
       }
@@ -383,15 +409,20 @@ class mymap {
       //
       // toVector:
       //
-      // Returns a vector of the entire map, in order.  For 8/80, 15/150, 20/200:
+      // Returns a vector of the entire map, in order without using iterator  For 8/80, 15/150, 20/200:
       // {{8, 80}, {15, 150}, {20, 200}}
       // Time complexity: O(n), where n is total number of nodes in the
       // threaded, self-balancing BST
       //
       vector<pair<keyType, valueType>> toVector() {
         vector<pair<keyType, valueType>> v;
-        for (iterator it = begin(); it != end(); ++it) {
-          v.push_back(make_pair(it->key, it->value));
+        NODE* curr = root;
+        while (curr->left != nullptr) {
+          curr = curr->left;
+        }
+        while (curr != nullptr) {
+          v.push_back(make_pair(curr->key, curr->value));
+          curr = successor(curr);
         }
         return v;
       }
@@ -414,4 +445,4 @@ class mymap {
       }
 
 
-}
+};
